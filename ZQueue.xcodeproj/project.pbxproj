@@ -21,12 +21,20 @@
 			remoteGlobalIDString = B5AE790B2F5CD689004100EC;
 			remoteInfo = ZQueue;
 		};
+		B5AE79462F5CD68A004100EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B5AE79042F5CD689004100EC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B5AE79452F5CD68A004100EC;
+			remoteInfo = "ZQueue Watch App";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		B5AE790C2F5CD689004100EC /* ZQueue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZQueue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5AE791B2F5CD68A004100EC /* ZQueueTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZQueueTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5AE79252F5CD68A004100EC /* ZQueueUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZQueueUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5AE79402F5CD68A004100EC /* ZQueue Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ZQueue Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +51,11 @@
 		B5AE79282F5CD68A004100EC /* ZQueueUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ZQueueUITests;
+			sourceTree = "<group>";
+		};
+		B5AE79412F5CD68A004100EC /* ZQueue Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "ZQueue Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +82,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5AE79432F5CD68A004100EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +98,7 @@
 				B5AE790E2F5CD689004100EC /* ZQueue */,
 				B5AE791E2F5CD68A004100EC /* ZQueueTests */,
 				B5AE79282F5CD68A004100EC /* ZQueueUITests */,
+				B5AE79412F5CD68A004100EC /* ZQueue Watch App */,
 				B5AE790D2F5CD689004100EC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +109,7 @@
 				B5AE790C2F5CD689004100EC /* ZQueue.app */,
 				B5AE791B2F5CD68A004100EC /* ZQueueTests.xctest */,
 				B5AE79252F5CD68A004100EC /* ZQueueUITests.xctest */,
+				B5AE79402F5CD68A004100EC /* ZQueue Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +128,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B5AE79472F5CD68A004100EC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B5AE790E2F5CD689004100EC /* ZQueue */,
@@ -163,6 +186,28 @@
 			productReference = B5AE79252F5CD68A004100EC /* ZQueueUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		B5AE79452F5CD68A004100EC /* ZQueue Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B5AE794A2F5CD68A004100EC /* Build configuration list for PBXNativeTarget "ZQueue Watch App" */;
+			buildPhases = (
+				B5AE79422F5CD68A004100EC /* Sources */,
+				B5AE79432F5CD68A004100EC /* Frameworks */,
+				B5AE79442F5CD68A004100EC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B5AE79412F5CD68A004100EC /* ZQueue Watch App */,
+			);
+			name = "ZQueue Watch App";
+			packageProductDependencies = (
+			);
+			productName = "ZQueue Watch App";
+			productReference = B5AE79402F5CD68A004100EC /* ZQueue Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +229,9 @@
 						CreatedOnToolsVersion = 26.3;
 						TestTargetID = B5AE790B2F5CD689004100EC;
 					};
+					B5AE79452F5CD68A004100EC = {
+						CreatedOnToolsVersion = 26.3;
+					};
 				};
 			};
 			buildConfigurationList = B5AE79072F5CD689004100EC /* Build configuration list for PBXProject "ZQueue" */;
@@ -203,6 +251,7 @@
 				B5AE790B2F5CD689004100EC /* ZQueue */,
 				B5AE791A2F5CD68A004100EC /* ZQueueTests */,
 				B5AE79242F5CD68A004100EC /* ZQueueUITests */,
+				B5AE79452F5CD68A004100EC /* ZQueue Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +272,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B5AE79232F5CD68A004100EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5AE79442F5CD68A004100EC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +309,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5AE79422F5CD68A004100EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +328,11 @@
 			isa = PBXTargetDependency;
 			target = B5AE790B2F5CD689004100EC /* ZQueue */;
 			targetProxy = B5AE79262F5CD68A004100EC /* PBXContainerItemProxy */;
+		};
+		B5AE79472F5CD68A004100EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B5AE79452F5CD68A004100EC /* ZQueue Watch App */;
+			targetProxy = B5AE79462F5CD68A004100EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -575,6 +643,60 @@
 			};
 			name = Release;
 		};
+		B5AE79482F5CD68A004100EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7W274FEX46;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ZQueue;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.shillerben.ZQueue;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shillerben.ZQueue.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		B5AE79492F5CD68A004100EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7W274FEX46;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ZQueue;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.shillerben.ZQueue;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shillerben.ZQueue.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -610,6 +732,15 @@
 			buildConfigurations = (
 				B5AE79362F5CD68A004100EC /* Debug */,
 				B5AE79372F5CD68A004100EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B5AE794A2F5CD68A004100EC /* Build configuration list for PBXNativeTarget "ZQueue Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5AE79482F5CD68A004100EC /* Debug */,
+				B5AE79492F5CD68A004100EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
