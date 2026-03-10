@@ -14,11 +14,13 @@ struct QueueView: View {
     @Query(sort: \AudioItem.order) private var items: [AudioItem]
     @State private var showingFilePicker = false
     @State private var showingPlayback = false
+    @State private var selectedItems: Set<PersistentIdentifier> = []
+    @State private var isEditing = false
     @Bindable var playerManager: AudioPlayerManager
 
     var body: some View {
         NavigationStack {
-            List {
+            List(selection: isEditing ? $selectedItems : nil) {
                 ForEach(items) { item in
                     Button {
                         playerManager.loadQueue(items)
@@ -33,7 +35,9 @@ struct QueueView: View {
                 }
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
+                .deleteDisabled(isEditing)
             }
+            .environment(\.editMode, isEditing ? .constant(.active) : .constant(.inactive))
             .overlay {
                 if items.isEmpty {
                     ContentUnavailableView {
@@ -46,29 +50,88 @@ struct QueueView: View {
             .navigationTitle("ZQueue")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingFilePicker = true
-                    } label: {
-                        Label("Add Audio", systemImage: "plus")
+                    if isEditing {
+                        Button("Done") {
+                            isEditing = false
+                            selectedItems.removeAll()
+                        }
+                    } else {
+                        Button {
+                            showingFilePicker = true
+                        } label: {
+                            Label("Add Audio", systemImage: "plus")
+                        }
                     }
                 }
                 if !items.isEmpty {
                     #if os(iOS)
+                    ToolbarItem(placement: .topBarLeading) {
+                        if isEditing {
+                            Button {
+                                if selectedItems.count == items.count {
+                                    selectedItems.removeAll()
+                                } else {
+                                    selectedItems = Set(items.map(\.persistentModelID))
+                                }
+                            } label: {
+                                Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
+                            }
+                        } else {
+                            Button("Edit") {
+                                isEditing = true
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .bottomBar) {
-                        Button {
-                            playerManager.loadQueue(items)
-                            showingPlayback = true
-                        } label: {
-                            Label("Play", systemImage: "play.fill")
+                        if isEditing {
+                            Button(role: .destructive) {
+                                deleteSelectedItems()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .disabled(selectedItems.isEmpty)
+                        } else {
+                            Button {
+                                playerManager.loadQueue(items)
+                                showingPlayback = true
+                            } label: {
+                                Label("Play", systemImage: "play.fill")
+                            }
                         }
                     }
                     #else
                     ToolbarItem {
-                        Button {
-                            playerManager.loadQueue(items)
-                            showingPlayback = true
-                        } label: {
-                            Label("Play", systemImage: "play.fill")
+                        if isEditing {
+                            Button {
+                                if selectedItems.count == items.count {
+                                    selectedItems.removeAll()
+                                } else {
+                                    selectedItems = Set(items.map(\.persistentModelID))
+                                }
+                            } label: {
+                                Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
+                            }
+                        } else {
+                            Button("Edit") {
+                                isEditing = true
+                            }
+                        }
+                    }
+                    ToolbarItem {
+                        if isEditing {
+                            Button(role: .destructive) {
+                                deleteSelectedItems()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .disabled(selectedItems.isEmpty)
+                        } else {
+                            Button {
+                                playerManager.loadQueue(items)
+                                showingPlayback = true
+                            } label: {
+                                Label("Play", systemImage: "play.fill")
+                            }
                         }
                     }
                     #endif
@@ -119,6 +182,17 @@ struct QueueView: View {
             }
         case .failure(let error):
             print("File import failed: \(error.localizedDescription)")
+        }
+    }
+
+    private func deleteSelectedItems() {
+        withAnimation {
+            for item in items where selectedItems.contains(item.persistentModelID) {
+                modelContext.delete(item)
+            }
+            selectedItems.removeAll()
+            isEditing = false
+            reorderItems()
         }
     }
 
