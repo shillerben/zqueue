@@ -9,6 +9,9 @@ import Foundation
 import AVFoundation
 import SwiftData
 import Observation
+#if os(iOS)
+import MediaPlayer
+#endif
 
 @Observable
 final class AudioPlayerManager {
@@ -24,6 +27,9 @@ final class AudioPlayerManager {
     private var currentIndex: Int = 0
     private var displayLink: Timer?
     private var delegate: PlayerDelegate?
+    #if os(iOS)
+    private var remoteCommandsConfigured = false
+    #endif
 
     func loadQueue(_ items: [AudioItem]) {
         queue = items.sorted { $0.order < $1.order }
@@ -35,6 +41,9 @@ final class AudioPlayerManager {
             audioPlayer?.play()
             isPlaying = true
             startProgressTimer()
+            #if os(iOS)
+            updateNowPlayingPlaybackInfo()
+            #endif
         } else {
             playItem(at: currentIndex)
         }
@@ -44,6 +53,9 @@ final class AudioPlayerManager {
         audioPlayer?.pause()
         isPlaying = false
         stopProgressTimer()
+        #if os(iOS)
+        updateNowPlayingPlaybackInfo()
+        #endif
     }
 
     func togglePlayPause() {
@@ -77,6 +89,9 @@ final class AudioPlayerManager {
     func seek(to time: TimeInterval) {
         audioPlayer?.currentTime = time
         currentTime = time
+        #if os(iOS)
+        updateNowPlayingPlaybackInfo()
+        #endif
     }
 
     func playItem(at index: Int) {
@@ -108,6 +123,11 @@ final class AudioPlayerManager {
             audioPlayer?.play()
             isPlaying = true
             startProgressTimer()
+
+            #if os(iOS)
+            configureRemoteCommands()
+            updateNowPlayingInfo()
+            #endif
         } catch {
             print("Error playing audio: \(error.localizedDescription)")
         }
@@ -125,6 +145,9 @@ final class AudioPlayerManager {
         duration = 0
         currentItem = nil
         stopProgressTimer()
+        #if os(iOS)
+        clearNowPlayingInfo()
+        #endif
     }
 
     private func handlePlaybackFinished() {
@@ -147,6 +170,76 @@ final class AudioPlayerManager {
         displayLink?.invalidate()
         displayLink = nil
     }
+
+    // MARK: - Now Playing & Remote Commands
+
+    #if os(iOS)
+    private func configureRemoteCommands() {
+        guard !remoteCommandsConfigured else { return }
+        remoteCommandsConfigured = true
+
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.addTarget { [weak self] _ in
+            self?.play()
+            return .success
+        }
+
+        commandCenter.pauseCommand.addTarget { [weak self] _ in
+            self?.pause()
+            return .success
+        }
+
+        commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
+            self?.togglePlayPause()
+            return .success
+        }
+
+        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+            guard let self, self.hasNext else { return .commandFailed }
+            self.skipForward()
+            return .success
+        }
+
+        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+            self?.skipBackward()
+            return .success
+        }
+
+        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+            guard let self,
+                  let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
+                return .commandFailed
+            }
+            self.seek(to: positionEvent.positionTime)
+            return .success
+        }
+    }
+
+    private func updateNowPlayingInfo() {
+        var info = [String: Any]()
+        info[MPMediaItemPropertyTitle] = currentItem?.title ?? ""
+        info[MPMediaItemPropertyPlaybackDuration] = duration
+        info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
+        info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
+        info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    private func updateNowPlayingPlaybackInfo() {
+        guard var info = MPNowPlayingInfoCenter.default().nowPlayingInfo else {
+            updateNowPlayingInfo()
+            return
+        }
+        info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = audioPlayer?.currentTime ?? currentTime
+        info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    private func clearNowPlayingInfo() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+    }
+    #endif
 }
 
 // MARK: - AVAudioPlayerDelegate wrapper
