@@ -10,17 +10,14 @@ import SwiftData
 
 struct ContentView: View {
     @State private var playerManager = AudioPlayerManager()
-    #if os(iOS)
     @State private var connectivityManager = PhoneConnectivityManager()
-    #endif
 
     var body: some View {
         QueueView(playerManager: playerManager)
-        #if os(iOS)
             .onAppear {
                 connectivityManager.configure(playerManager: playerManager)
+                playerManager.configure(connectivityManager: connectivityManager)
             }
-        #endif
     }
 }
 

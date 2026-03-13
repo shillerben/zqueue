@@ -8,10 +8,11 @@
 import Foundation
 import AVFoundation
 import SwiftData
+import os
 import Observation
-#if os(iOS)
 import MediaPlayer
-#endif
+
+private let log = Logger(subsystem: "com.zqueue", category: "AudioPlayer")
 
 @Observable
 final class AudioPlayerManager {
@@ -27,12 +28,16 @@ final class AudioPlayerManager {
     private var currentIndex: Int = 0
     private var displayLink: Timer?
     private var delegate: PlayerDelegate?
-    #if os(iOS)
     private var remoteCommandsConfigured = false
-    #endif
+    private weak var connectivityManager: PhoneConnectivityManager?
+
+    func configure(connectivityManager: PhoneConnectivityManager) {
+        self.connectivityManager = connectivityManager
+    }
 
     func loadQueue(_ items: [AudioItem]) {
         queue = items.sorted { $0.order < $1.order }
+        sendWatchQueueState()
     }
 
     func play() {
@@ -41,9 +46,8 @@ final class AudioPlayerManager {
             audioPlayer?.play()
             isPlaying = true
             startProgressTimer()
-            #if os(iOS)
             updateNowPlayingPlaybackInfo()
-            #endif
+            sendWatchNowPlayingUpdate()
         } else {
             playItem(at: currentIndex)
         }
@@ -53,9 +57,8 @@ final class AudioPlayerManager {
         audioPlayer?.pause()
         isPlaying = false
         stopProgressTimer()
-        #if os(iOS)
         updateNowPlayingPlaybackInfo()
-        #endif
+        sendWatchNowPlayingUpdate()
     }
 
     func togglePlayPause() {
@@ -89,9 +92,7 @@ final class AudioPlayerManager {
     func seek(to time: TimeInterval) {
         audioPlayer?.currentTime = time
         currentTime = time
-        #if os(iOS)
         updateNowPlayingPlaybackInfo()
-        #endif
     }
 
     func playItem(at index: Int) {
@@ -105,11 +106,9 @@ final class AudioPlayerManager {
         let accessing = url.startAccessingSecurityScopedResource()
 
         do {
-            #if os(iOS)
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback)
             try session.setActive(true)
-            #endif
 
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             let playerDelegate = PlayerDelegate { [weak self] in
@@ -124,10 +123,9 @@ final class AudioPlayerManager {
             isPlaying = true
             startProgressTimer()
 
-            #if os(iOS)
             configureRemoteCommands()
             updateNowPlayingInfo()
-            #endif
+            sendWatchQueueState()
         } catch {
             print("Error playing audio: \(error.localizedDescription)")
         }
@@ -145,9 +143,8 @@ final class AudioPlayerManager {
         duration = 0
         currentItem = nil
         stopProgressTimer()
-        #if os(iOS)
         clearNowPlayingInfo()
-        #endif
+        sendWatchNowPlayingUpdate()
     }
 
     private func handlePlaybackFinished() {
@@ -173,7 +170,6 @@ final class AudioPlayerManager {
 
     // MARK: - Now Playing & Remote Commands
 
-    #if os(iOS)
     private func configureRemoteCommands() {
         guard !remoteCommandsConfigured else { return }
         remoteCommandsConfigured = true
@@ -239,7 +235,32 @@ final class AudioPlayerManager {
     private func clearNowPlayingInfo() {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
-    #endif
+
+    func sendWatchQueueState() {
+        log.info("sendWatchQueueState: \(self.queue.count) items, currentTrack=\(self.currentItem?.title ?? "nil"), isPlaying=\(self.isPlaying), connectivityManager=\(self.connectivityManager == nil ? "nil" : "set")")
+        connectivityManager?.sendQueueState(
+            items: queue,
+            currentTrack: currentItem?.title,
+            isPlaying: isPlaying
+        )
+    }
+
+    func sendWatchQueueState(items: [AudioItem]) {
+        log.info("sendWatchQueueState(items:): \(items.count) items, currentTrack=\(self.currentItem?.title ?? "nil"), isPlaying=\(self.isPlaying), connectivityManager=\(self.connectivityManager == nil ? "nil" : "set")")
+        connectivityManager?.sendQueueState(
+            items: items,
+            currentTrack: currentItem?.title,
+            isPlaying: isPlaying
+        )
+    }
+
+    private func sendWatchNowPlayingUpdate() {
+        log.info("sendWatchNowPlayingUpdate: currentTrack=\(self.currentItem?.title ?? "nil"), isPlaying=\(self.isPlaying), connectivityManager=\(self.connectivityManager == nil ? "nil" : "set")")
+        connectivityManager?.sendNowPlayingUpdate(
+            currentTrack: currentItem?.title,
+            isPlaying: isPlaying
+        )
+    }
 }
 
 // MARK: - AVAudioPlayerDelegate wrapper

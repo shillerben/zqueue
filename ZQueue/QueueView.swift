@@ -64,7 +64,6 @@ struct QueueView: View {
                     }
                 }
                 if !items.isEmpty {
-                    #if os(iOS)
                     ToolbarItem(placement: .topBarLeading) {
                         if isEditing {
                             Button {
@@ -99,7 +98,6 @@ struct QueueView: View {
                             }
                         }
                     }
-                    #else
                     ToolbarItem {
                         if isEditing {
                             Button {
@@ -134,7 +132,6 @@ struct QueueView: View {
                             }
                         }
                     }
-                    #endif
                 }
             }
             .fileImporter(
@@ -146,6 +143,9 @@ struct QueueView: View {
             }
             .navigationDestination(isPresented: $showingPlayback) {
                 PlaybackView(playerManager: playerManager, items: items)
+            }
+            .onAppear {
+                playerManager.sendWatchQueueState(items: items)
             }
         }
     }
@@ -180,6 +180,7 @@ struct QueueView: View {
                     print("Failed to create bookmark for \(url): \(error)")
                 }
             }
+            playerManager.sendWatchQueueState(items: items)
         case .failure(let error):
             print("File import failed: \(error.localizedDescription)")
         }
@@ -194,6 +195,7 @@ struct QueueView: View {
             isEditing = false
             reorderItems()
         }
+        playerManager.sendWatchQueueState(items: items)
     }
 
     private func deleteItems(offsets: IndexSet) {
@@ -203,6 +205,7 @@ struct QueueView: View {
             }
             reorderItems()
         }
+        playerManager.sendWatchQueueState(items: items)
     }
 
     private func moveItems(from source: IndexSet, to destination: Int) {
@@ -211,6 +214,7 @@ struct QueueView: View {
         for (index, item) in mutableItems.enumerated() {
             item.order = index
         }
+        playerManager.sendWatchQueueState(items: items)
     }
 
     private func reorderItems() {

@@ -90,8 +90,7 @@ struct PlaybackView: View {
             }
             .padding(.bottom, 32)
 
-            #if os(iOS)
-            // Queue reorder dropdown (iPhone only)
+            // Queue reorder dropdown
             VStack(spacing: 0) {
                 Button {
                     withAnimation {
@@ -146,12 +145,9 @@ struct PlaybackView: View {
                 }
             }
             .padding(.bottom, 16)
-            #endif
         }
         .navigationTitle("Now Playing")
-        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
-        #endif
         .onAppear {
             if playerManager.currentItem == nil, !items.isEmpty {
                 playerManager.loadQueue(items)
