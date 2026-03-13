@@ -125,11 +125,6 @@
 			path = ZQueueUITests;
 			sourceTree = "<group>";
 		};
-		B5AE79412F5CD68A004100EC /* ZQueue Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "ZQueue Watch App";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,7 +179,6 @@
 				B5AE790E2F5CD689004100EC /* ZQueue */,
 				B5AE791E2F5CD68A004100EC /* ZQueueTests */,
 				B5AE79282F5CD68A004100EC /* ZQueueUITests */,
-				B5AE79412F5CD68A004100EC /* ZQueue Watch App */,
 				B52DA2EF2F610C8E009A063C /* ZQueueWatchApp Watch App */,
 				B52DA2FD2F610C8F009A063C /* ZQueueWatchApp Watch AppTests */,
 				B52DA3072F610C8F009A063C /* ZQueueWatchApp Watch AppUITests */,
