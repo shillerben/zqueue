@@ -20,7 +20,7 @@ struct PlaybackView: View {
 
             // Current track info
             VStack(spacing: 12) {
-                Image(systemName: "music.note.circle.fill")
+                Image(systemName: "music.note")
                     .font(.system(size: 100))
                     .foregroundStyle(.tint)
                     .symbolEffect(.pulse, isActive: playerManager.isPlaying)
