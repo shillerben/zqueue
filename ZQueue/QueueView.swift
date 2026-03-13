@@ -49,6 +49,27 @@ struct QueueView: View {
             }
             .navigationTitle("ZQueue")
             .toolbar {
+                if !items.isEmpty && isEditing {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            if selectedItems.count == items.count {
+                                selectedItems.removeAll()
+                            } else {
+                                selectedItems = Set(items.map(\.persistentModelID))
+                            }
+                        } label: {
+                            Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
+                        }
+                    }
+                    ToolbarItem(placement: .bottomBar) {
+                        Button(role: .destructive) {
+                            deleteSelectedItems()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .disabled(selectedItems.isEmpty)
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     if isEditing {
                         Button("Done") {
@@ -63,73 +84,18 @@ struct QueueView: View {
                         }
                     }
                 }
-                if !items.isEmpty {
-                    ToolbarItem(placement: .topBarLeading) {
-                        if isEditing {
-                            Button {
-                                if selectedItems.count == items.count {
-                                    selectedItems.removeAll()
-                                } else {
-                                    selectedItems = Set(items.map(\.persistentModelID))
-                                }
-                            } label: {
-                                Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
-                            }
-                        } else {
-                            Button("Edit") {
-                                isEditing = true
-                            }
-                        }
-                    }
+                if !items.isEmpty && !isEditing {
                     ToolbarItem(placement: .bottomBar) {
-                        if isEditing {
-                            Button(role: .destructive) {
-                                deleteSelectedItems()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .disabled(selectedItems.isEmpty)
-                        } else {
-                            Button {
-                                playerManager.loadQueue(items)
-                                showingPlayback = true
-                            } label: {
-                                Label("Play", systemImage: "play.fill")
-                            }
+                        Button {
+                            playerManager.loadQueue(items)
+                            showingPlayback = true
+                        } label: {
+                            Label("Play", systemImage: "play.fill")
                         }
                     }
-                    ToolbarItem {
-                        if isEditing {
-                            Button {
-                                if selectedItems.count == items.count {
-                                    selectedItems.removeAll()
-                                } else {
-                                    selectedItems = Set(items.map(\.persistentModelID))
-                                }
-                            } label: {
-                                Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
-                            }
-                        } else {
-                            Button("Edit") {
-                                isEditing = true
-                            }
-                        }
-                    }
-                    ToolbarItem {
-                        if isEditing {
-                            Button(role: .destructive) {
-                                deleteSelectedItems()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .disabled(selectedItems.isEmpty)
-                        } else {
-                            Button {
-                                playerManager.loadQueue(items)
-                                showingPlayback = true
-                            } label: {
-                                Label("Play", systemImage: "play.fill")
-                            }
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Edit") {
+                            isEditing = true
                         }
                     }
                 }
