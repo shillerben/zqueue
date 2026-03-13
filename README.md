@@ -5,7 +5,7 @@ A queue-based audio player for iOS and watchOS. Import audio files from your dev
 ## Features
 
 - **Queue Management** — Import audio files, reorder with drag-and-drop, and bulk-delete with edit mode
-- **Playback Controls** — Play, pause, skip forward/backward, and seek through tracks
+- **Playback Controls** — Play, pause, skip forward/backward, and seek through tracks. Toggle between music mode (previous/next track) and podcast mode (-15s/+15s skip)
 - **Background Playback** — Audio continues playing when the app is backgrounded
 - **Now Playing Integration** — Lock screen and Control Center controls with track info
 - **Apple Watch App** — View the queue and control playback from your wrist
