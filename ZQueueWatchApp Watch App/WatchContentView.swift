@@ -38,9 +38,13 @@ struct WatchContentView: View {
                         HStack {
                             Spacer()
                             Button {
-                                connectivityManager.sendCommand(.skipBackward)
+                                if connectivityManager.controlMode == "podcast" {
+                                    connectivityManager.sendCommand(.skipBack15)
+                                } else {
+                                    connectivityManager.sendCommand(.skipBackward)
+                                }
                             } label: {
-                                Image(systemName: "backward.fill")
+                                Image(systemName: connectivityManager.controlMode == "podcast" ? "gobackward.15" : "backward.fill")
                                     .font(.title3)
                             }
                             .buttonStyle(.borderless)
@@ -58,9 +62,13 @@ struct WatchContentView: View {
                             Spacer()
 
                             Button {
-                                connectivityManager.sendCommand(.skipForward)
+                                if connectivityManager.controlMode == "podcast" {
+                                    connectivityManager.sendCommand(.skipForward15)
+                                } else {
+                                    connectivityManager.sendCommand(.skipForward)
+                                }
                             } label: {
-                                Image(systemName: "forward.fill")
+                                Image(systemName: connectivityManager.controlMode == "podcast" ? "goforward.15" : "forward.fill")
                                     .font(.title3)
                             }
                             .buttonStyle(.borderless)

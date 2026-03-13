@@ -42,7 +42,8 @@ final class PhoneConnectivityManager: NSObject {
         let context: [String: Any] = [
             "queueItems": titles,
             "currentTrack": currentTrack ?? "",
-            "isPlaying": isPlaying
+            "isPlaying": isPlaying,
+            "controlMode": playerManager?.controlMode.rawValue ?? "music"
         ]
         log.info("sendQueueState: \(titles.count) items, currentTrack=\(currentTrack ?? "nil"), isPlaying=\(isPlaying), isPaired=\(session.isPaired), isWatchAppInstalled=\(session.isWatchAppInstalled), isReachable=\(session.isReachable)")
         do {
@@ -66,6 +67,7 @@ final class PhoneConnectivityManager: NSObject {
         if let currentTrack {
             message["currentTrack"] = currentTrack
         }
+        message["controlMode"] = playerManager?.controlMode.rawValue ?? "music"
         log.info("sendNowPlayingUpdate: currentTrack=\(currentTrack ?? "nil"), isPlaying=\(isPlaying)")
         session.sendMessage(message, replyHandler: nil) { error in
             log.error("sendNowPlayingUpdate: sendMessage failed: \(error.localizedDescription)")
@@ -109,6 +111,10 @@ extension PhoneConnectivityManager: WCSessionDelegate {
                 self.playerManager?.skipForward()
             case "skipBackward":
                 self.playerManager?.skipBackward()
+            case "skipForward15":
+                self.playerManager?.skipForward15()
+            case "skipBack15":
+                self.playerManager?.skipBack15()
             default:
                 log.warning("Unknown watch command: \(commandString)")
             }

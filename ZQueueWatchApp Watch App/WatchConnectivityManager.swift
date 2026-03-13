@@ -16,6 +16,8 @@ enum PlaybackCommand: String {
     case togglePlayPause
     case skipForward
     case skipBackward
+    case skipForward15
+    case skipBack15
 }
 
 @Observable
@@ -23,6 +25,7 @@ final class WatchConnectivityManager: NSObject {
     var queueItems: [String] = []
     var currentTrackTitle: String?
     var isPlaying: Bool = false
+    var controlMode: String = "music"
 
     private var session: WCSession?
 
@@ -84,6 +87,10 @@ extension WatchConnectivityManager: WCSessionDelegate {
                 log.info("  isPlaying: \(playing)")
                 self.isPlaying = playing
             }
+            if let mode = applicationContext["controlMode"] as? String {
+                log.info("  controlMode: \(mode)")
+                self.controlMode = mode
+            }
         }
     }
 
@@ -97,6 +104,10 @@ extension WatchConnectivityManager: WCSessionDelegate {
             if let playing = message["isPlaying"] as? Bool {
                 log.info("  isPlaying: \(playing)")
                 self.isPlaying = playing
+            }
+            if let mode = message["controlMode"] as? String {
+                log.info("  controlMode: \(mode)")
+                self.controlMode = mode
             }
         }
     }

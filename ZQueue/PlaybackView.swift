@@ -65,13 +65,23 @@ struct PlaybackView: View {
 
             // Playback controls
             HStack(spacing: 40) {
-                Button {
-                    playerManager.skipBackward()
-                } label: {
-                    Image(systemName: "backward.fill")
-                        .font(.title)
+                if playerManager.controlMode == .podcast {
+                    Button {
+                        playerManager.skipBack15()
+                    } label: {
+                        Image(systemName: "gobackward.15")
+                            .font(.title)
+                    }
+                    .disabled(playerManager.currentItem == nil)
+                } else {
+                    Button {
+                        playerManager.skipBackward()
+                    } label: {
+                        Image(systemName: "backward.fill")
+                            .font(.title)
+                    }
+                    .disabled(!playerManager.hasPrevious && playerManager.currentTime <= 3)
                 }
-                .disabled(!playerManager.hasPrevious && playerManager.currentTime <= 3)
 
                 Button {
                     playerManager.togglePlayPause()
@@ -80,13 +90,23 @@ struct PlaybackView: View {
                         .font(.system(size: 64))
                 }
 
-                Button {
-                    playerManager.skipForward()
-                } label: {
-                    Image(systemName: "forward.fill")
-                        .font(.title)
+                if playerManager.controlMode == .podcast {
+                    Button {
+                        playerManager.skipForward15()
+                    } label: {
+                        Image(systemName: "goforward.15")
+                            .font(.title)
+                    }
+                    .disabled(playerManager.currentItem == nil)
+                } else {
+                    Button {
+                        playerManager.skipForward()
+                    } label: {
+                        Image(systemName: "forward.fill")
+                            .font(.title)
+                    }
+                    .disabled(!playerManager.hasNext)
                 }
-                .disabled(!playerManager.hasNext)
             }
             .padding(.bottom, 32)
 
@@ -148,6 +168,15 @@ struct PlaybackView: View {
         }
         .navigationTitle("Now Playing")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    playerManager.controlMode = playerManager.controlMode == .music ? .podcast : .music
+                } label: {
+                    Image(systemName: playerManager.controlMode == .podcast ? "headphones" : "music.note")
+                }
+            }
+        }
         .onAppear {
             if playerManager.currentItem == nil, !items.isEmpty {
                 playerManager.loadQueue(items)

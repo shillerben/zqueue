@@ -14,6 +14,11 @@ import MediaPlayer
 
 private let log = Logger(subsystem: "com.zqueue", category: "AudioPlayer")
 
+enum ControlMode: String {
+    case music
+    case podcast
+}
+
 @Observable
 final class AudioPlayerManager {
     var isPlaying = false
@@ -23,6 +28,14 @@ final class AudioPlayerManager {
     var hasNext: Bool { currentIndex < queue.count - 1 }
     var hasPrevious: Bool { currentIndex > 0 }
 
+    var controlMode: ControlMode {
+        didSet {
+            UserDefaults.standard.set(controlMode.rawValue, forKey: "controlMode")
+            updateRemoteCommandModes()
+            sendWatchNowPlayingUpdate()
+        }
+    }
+
     private var audioPlayer: AVAudioPlayer?
     private var queue: [AudioItem] = []
     private var currentIndex: Int = 0
@@ -30,6 +43,11 @@ final class AudioPlayerManager {
     private var delegate: PlayerDelegate?
     private var remoteCommandsConfigured = false
     private weak var connectivityManager: PhoneConnectivityManager?
+
+    init() {
+        let stored = UserDefaults.standard.string(forKey: "controlMode") ?? ControlMode.music.rawValue
+        self.controlMode = ControlMode(rawValue: stored) ?? .music
+    }
 
     func configure(connectivityManager: PhoneConnectivityManager) {
         self.connectivityManager = connectivityManager
@@ -87,6 +105,14 @@ final class AudioPlayerManager {
         }
         currentIndex -= 1
         playItem(at: currentIndex)
+    }
+
+    func skipBack15() {
+        seek(to: max(currentTime - 15, 0))
+    }
+
+    func skipForward15() {
+        seek(to: min(currentTime + 15, duration))
     }
 
     func seek(to time: TimeInterval) {
@@ -202,6 +228,18 @@ final class AudioPlayerManager {
             return .success
         }
 
+        commandCenter.skipForwardCommand.preferredIntervals = [15]
+        commandCenter.skipForwardCommand.addTarget { [weak self] _ in
+            self?.skipForward15()
+            return .success
+        }
+
+        commandCenter.skipBackwardCommand.preferredIntervals = [15]
+        commandCenter.skipBackwardCommand.addTarget { [weak self] _ in
+            self?.skipBack15()
+            return .success
+        }
+
         commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
             guard let self,
                   let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
@@ -210,6 +248,19 @@ final class AudioPlayerManager {
             self.seek(to: positionEvent.positionTime)
             return .success
         }
+
+        updateRemoteCommandModes()
+    }
+
+    private func updateRemoteCommandModes() {
+        guard remoteCommandsConfigured else { return }
+        let commandCenter = MPRemoteCommandCenter.shared()
+        let isPodcast = controlMode == .podcast
+
+        commandCenter.nextTrackCommand.isEnabled = !isPodcast
+        commandCenter.previousTrackCommand.isEnabled = !isPodcast
+        commandCenter.skipForwardCommand.isEnabled = isPodcast
+        commandCenter.skipBackwardCommand.isEnabled = isPodcast
     }
 
     private func updateNowPlayingInfo() {
