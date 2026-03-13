@@ -61,7 +61,7 @@ struct QueueView: View {
                             Text(selectedItems.count == items.count ? "Deselect All" : "Select All")
                         }
                     }
-                    ToolbarItem(placement: .bottomBar) {
+                    ToolbarItem(placement: .primaryAction) {
                         Button(role: .destructive) {
                             deleteSelectedItems()
                         } label: {
@@ -85,7 +85,7 @@ struct QueueView: View {
                     }
                 }
                 if !items.isEmpty && !isEditing {
-                    ToolbarItem(placement: .bottomBar) {
+                    ToolbarItem(placement: .primaryAction) {
                         Button {
                             playerManager.loadQueue(items)
                             showingPlayback = true
