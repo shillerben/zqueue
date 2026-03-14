@@ -287,6 +287,28 @@ final class AudioPlayerManager {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
 
+    func reorderQueue(toMatch titles: [String]) {
+        var remaining = queue
+        var reordered: [AudioItem] = []
+        for title in titles {
+            if let idx = remaining.firstIndex(where: { $0.title == title }) {
+                reordered.append(remaining.remove(at: idx))
+            }
+        }
+        reordered.append(contentsOf: remaining)
+
+        for (i, item) in reordered.enumerated() {
+            item.order = i
+        }
+        queue = reordered
+
+        if let current = currentItem {
+            currentIndex = queue.firstIndex(where: { $0.id == current.id }) ?? 0
+        }
+
+        sendWatchQueueState()
+    }
+
     func sendWatchQueueState() {
         log.info("sendWatchQueueState: \(self.queue.count) items, currentTrack=\(self.currentItem?.title ?? "nil"), isPlaying=\(self.isPlaying), connectivityManager=\(self.connectivityManager == nil ? "nil" : "set")")
         connectivityManager?.sendQueueState(

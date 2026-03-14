@@ -12,12 +12,14 @@ import Observation
 
 private let log = Logger(subsystem: "com.zqueue", category: "WatchConnectivity")
 
-enum PlaybackCommand: String {
+enum PlaybackCommand {
     case togglePlayPause
     case skipForward
     case skipBackward
     case skipForward15
     case skipBack15
+    case playItemAtIndex(Int)
+    case reorderQueue([String])
 }
 
 @Observable
@@ -43,16 +45,37 @@ final class WatchConnectivityManager: NSObject {
 
     func sendCommand(_ command: PlaybackCommand) {
         guard let session else {
-            log.warning("sendCommand(\(command.rawValue)): session is nil")
+            log.warning("sendCommand: session is nil")
             return
         }
         guard session.isReachable else {
-            log.warning("sendCommand(\(command.rawValue)): phone not reachable (activationState=\(session.activationState.rawValue))")
+            log.warning("sendCommand: phone not reachable (activationState=\(session.activationState.rawValue))")
             return
         }
-        log.info("sendCommand: \(command.rawValue)")
-        session.sendMessage(["command": command.rawValue], replyHandler: nil) { error in
-            log.error("sendCommand(\(command.rawValue)) failed: \(error.localizedDescription)")
+
+        var message: [String: Any] = [:]
+        switch command {
+        case .togglePlayPause:
+            message["command"] = "togglePlayPause"
+        case .skipForward:
+            message["command"] = "skipForward"
+        case .skipBackward:
+            message["command"] = "skipBackward"
+        case .skipForward15:
+            message["command"] = "skipForward15"
+        case .skipBack15:
+            message["command"] = "skipBack15"
+        case .playItemAtIndex(let index):
+            message["command"] = "playItemAtIndex"
+            message["index"] = index
+        case .reorderQueue(let newOrder):
+            message["command"] = "reorderQueue"
+            message["queueItems"] = newOrder
+        }
+
+        log.info("sendCommand: \(message["command"] as? String ?? "unknown")")
+        session.sendMessage(message, replyHandler: nil) { error in
+            log.error("sendCommand failed: \(error.localizedDescription)")
         }
     }
 }

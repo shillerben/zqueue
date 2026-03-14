@@ -115,6 +115,14 @@ extension PhoneConnectivityManager: WCSessionDelegate {
                 self.playerManager?.skipForward15()
             case "skipBack15":
                 self.playerManager?.skipBack15()
+            case "playItemAtIndex":
+                if let index = message["index"] as? Int {
+                    self.playerManager?.playItem(at: index)
+                }
+            case "reorderQueue":
+                if let newOrder = message["queueItems"] as? [String] {
+                    self.playerManager?.reorderQueue(toMatch: newOrder)
+                }
             default:
                 log.warning("Unknown watch command: \(commandString)")
             }
